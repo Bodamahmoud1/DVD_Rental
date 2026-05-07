@@ -1,0 +1,351 @@
+{
+  "info": {
+    "name": "CineVault DVD Rental API",
+    "description": "Complete API collection for CineVault DVD Rental System — includes Auth, Films, Rentals, Members, Catalog (Categories + Actors), and Reviews.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000", "type": "string" },
+    { "key": "token",   "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberName\": \"Ahmed Hassan\",\n  \"email\": \"ahmed@example.com\",\n  \"password\": \"Ahmed1234!\",\n  \"phone\": \"0100000000\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["const r = pm.response.json();\nif(r.token) pm.collectionVariables.set('token', r.token);"] }
+          }],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ahmed@example.com\",\n  \"password\": \"Ahmed1234!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login Admin",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["const r = pm.response.json();\nif(r.token) pm.collectionVariables.set('token', r.token);"] }
+          }],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@cinevault.com\",\n  \"password\": \"Admin1234\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/auth/me",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Films",
+      "item": [
+        {
+          "name": "Get All Films",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/films" }
+        },
+        {
+          "name": "Get Films - Filter by Title",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/films?title=inception" }
+        },
+        {
+          "name": "Get Films - Paginated",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/films?page=1&limit=5" }
+        },
+        {
+          "name": "Get Film by ID",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/films/FILM_ID_HERE" }
+        },
+        {
+          "name": "Get Low Stock Alerts (Admin)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/films/alerts/low-stock",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Create Film (Admin)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/films",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filmTitle\": \"The Matrix\",\n  \"releaseDate\": \"1999-03-31\",\n  \"filmDuration\": 136,\n  \"price\": 3.50,\n  \"copies\": 3\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Film (Admin)",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/films/FILM_ID_HERE",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"price\": 4.00\n}" }
+          }
+        },
+        {
+          "name": "Delete Film (Admin)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/films/FILM_ID_HERE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rentals",
+      "item": [
+        {
+          "name": "Create Rental",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/rentals",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"filmId\": \"FILM_ID_HERE\"\n}" }
+          }
+        },
+        {
+          "name": "Get My Rentals",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/rentals/my",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Get All Rentals (Admin)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/rentals",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Get Active Rentals (Admin)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/rentals?status=active",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Return Rental (Admin)",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/rentals/RENTAL_ID_HERE/return",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Members",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/members/profile",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/members/profile",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"memberName\": \"Ahmed Updated\",\n  \"phone\": \"0111111111\"\n}" }
+          }
+        },
+        {
+          "name": "Upload Profile Picture",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/members/profile/picture",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"image\": \"data:image/jpeg;base64,BASE64_DATA_HERE\"\n}" }
+          }
+        },
+        {
+          "name": "Get All Members (Admin)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/members",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Delete Member (Admin)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/members/MEMBER_ID_HERE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/categories" }
+        },
+        {
+          "name": "Create Category (Admin)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/categories",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"categoryName\": \"Documentary\"\n}" }
+          }
+        },
+        {
+          "name": "Update Category (Admin)",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/categories/CATEGORY_ID_HERE",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"categoryName\": \"Updated Name\"\n}" }
+          }
+        },
+        {
+          "name": "Delete Category (Admin)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/categories/CATEGORY_ID_HERE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Actors",
+      "item": [
+        {
+          "name": "Get All Actors",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/actors" }
+        },
+        {
+          "name": "Search Actor by Name",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/actors?name=Tom" }
+        },
+        {
+          "name": "Create Actor (Admin)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/actors",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"actorName\": \"Scarlett Johansson\",\n  \"gender\": \"F\"\n}" }
+          }
+        },
+        {
+          "name": "Update Actor (Admin)",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/actors/ACTOR_ID_HERE",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"actorName\": \"Updated Name\"\n}" }
+          }
+        },
+        {
+          "name": "Delete Actor (Admin)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/actors/ACTOR_ID_HERE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Get Reviews for Film",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/reviews/FILM_ID_HERE" }
+        },
+        {
+          "name": "Submit Review",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/reviews",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"filmId\": \"FILM_ID_HERE\",\n  \"stars\": 5,\n  \"text\": \"Absolutely brilliant film!\"\n}" }
+          }
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/reviews/REVIEW_ID_HERE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,327 @@
+require("dotenv").config();
+const mongoose = require("mongoose");
+const connectDB = require("./config/db");
+const FilmCategory = require("./models/FilmCategory");
+const Actor = require("./models/Actor");
+const FilmTitle = require("./models/FilmTitle");
+const FilmCopy = require("./models/FilmCopy");
+const Member = require("./models/Member");
+
+const TMDB = "https://image.tmdb.org/t/p/w500";
+const TMDB_B = "https://image.tmdb.org/t/p/w1280";
+const seed = async () => {
+  console.log("Seeding database...");
+
+  // Clear existing data
+  await Promise.all([
+    FilmCategory.deleteMany(),
+    Actor.deleteMany(),
+    FilmTitle.deleteMany(),
+    FilmCopy.deleteMany(),
+  ]);
+
+  // Categories
+  const cats = await FilmCategory.insertMany([
+    { categoryName: "Action" }, { categoryName: "Drama" },
+    { categoryName: "Sci-Fi" }, { categoryName: "Thriller" },
+    { categoryName: "Comedy" }, { categoryName: "Horror" },
+  ]);
+  const catMap = Object.fromEntries(cats.map(c => [c.categoryName, c._id]));
+
+  // Actors
+  const actors = await Actor.insertMany([
+    { actorName: "Leonardo DiCaprio", gender: "M" },
+    { actorName: "Joseph Gordon-Levitt", gender: "M" },
+    { actorName: "Tom Hardy", gender: "M" },
+    { actorName: "Robert Pattinson", gender: "M" },
+    { actorName: "Christian Bale", gender: "M" },
+    { actorName: "Heath Ledger", gender: "M" },
+    { actorName: "George MacKay", gender: "M" },
+    { actorName: "Timothée Chalamet", gender: "M" },
+    { actorName: "Kang-ho Song", gender: "M" },
+    { actorName: "Matthew McConaughey", gender: "M" },
+    { actorName: "Marlon Brando", gender: "M" },
+    { actorName: "Al Pacino", gender: "M" },
+    { actorName: "Cillian Murphy", gender: "M" },
+    { actorName: "Russell Crowe", gender: "M" },
+    { actorName: "John Travolta", gender: "M" },
+    { actorName: "Tim Robbins", gender: "M" },
+    { actorName: "Morgan Freeman", gender: "M" },
+    { actorName: "Keanu Reeves", gender: "M" },
+    { actorName: "Laurence Fishburne", gender: "M" },
+    { actorName: "Elijah Wood", gender: "M" },
+    { actorName: "Viggo Mortensen", gender: "M" },
+    { actorName: "Tom Hanks", gender: "M" },
+    { actorName: "Robin Wright", gender: "F" },
+    { actorName: "Sigourney Weaver", gender: "F" },
+    { actorName: "Tom Skerritt", gender: "M" },
+    { actorName: "Jodie Foster", gender: "F" },
+    { actorName: "Anthony Hopkins", gender: "M" },
+    { actorName: "Brad Pitt", gender: "M" },
+    { actorName: "Edward Norton", gender: "M" },
+    { actorName: "Robert De Niro", gender: "M" },
+    { actorName: "Ray Liotta", gender: "M" },
+    { actorName: "Kevin Spacey", gender: "M" },
+    { actorName: "Gabriel Byrne", gender: "M" },
+    { actorName: "Matt Damon", gender: "M" },
+    { actorName: "Guy Pearce", gender: "M" },
+    { actorName: "Carrie-Anne Moss", gender: "F" },
+    { actorName: "Hugh Jackman", gender: "M" },
+    { actorName: "Michael Clarke Duncan", gender: "M" },
+    { actorName: "Liam Neeson", gender: "M" },
+    { actorName: "Ralph Fiennes", gender: "M" },
+    { actorName: "Jamie Foxx", gender: "M" },
+    { actorName: "Christoph Waltz", gender: "M" },
+    { actorName: "Jonah Hill", gender: "M" },
+    { actorName: "Mark Ruffalo", gender: "M" },
+    { actorName: "Joaquin Phoenix", gender: "M" },
+    { actorName: "Robert Downey Jr.", gender: "M" },
+    { actorName: "Chris Evans", gender: "M" },
+    { actorName: "Gwyneth Paltrow", gender: "F" },
+    { actorName: "Chris Pratt", gender: "M" },
+    { actorName: "Zoe Saldana", gender: "F" },
+    { actorName: "Shameik Moore", gender: "M" },
+    { actorName: "Jake Johnson", gender: "M" },
+    { actorName: "Sam Worthington", gender: "M" },
+    { actorName: "Arnold Schwarzenegger", gender: "M" },
+    { actorName: "Linda Hamilton", gender: "F" },
+    { actorName: "Edward Furlong", gender: "M" },
+    { actorName: "Sam Neill", gender: "M" },
+    { actorName: "Laura Dern", gender: "F" },
+    { actorName: "Michael J. Fox", gender: "M" },
+    { actorName: "Christopher Lloyd", gender: "M" },
+    { actorName: "Harrison Ford", gender: "M" },
+    { actorName: "Karen Allen", gender: "F" },
+    { actorName: "Mark Hamill", gender: "M" },
+    { actorName: "Jack Nicholson", gender: "M" },
+    { actorName: "Shelley Duvall", gender: "F" },
+    { actorName: "Kurt Russell", gender: "M" },
+    { actorName: "Keith David", gender: "M" },
+    { actorName: "Jim Carrey", gender: "M" },
+    { actorName: "Ed Harris", gender: "M" },
+    { actorName: "Bill Murray", gender: "M" },
+    { actorName: "Andie MacDowell", gender: "F" },
+    { actorName: "Will Ferrell", gender: "M" },
+    { actorName: "John C. Reilly", gender: "M" },
+    { actorName: "Michael Cera", gender: "M" },
+    { actorName: "Jeff Bridges", gender: "M" },
+    { actorName: "John Goodman", gender: "M" },
+    { actorName: "Simon Pegg", gender: "M" },
+    { actorName: "Nick Frost", gender: "M" },
+    { actorName: "Paul Rudd", gender: "M" },
+    { actorName: "Kristen Wiig", gender: "F" },
+    { actorName: "Maya Rudolph", gender: "F" },
+    { actorName: "Bradley Cooper", gender: "M" },
+    { actorName: "Zach Galifianakis", gender: "M" },
+    { actorName: "Charlize Theron", gender: "F" },
+    { actorName: "Bruce Willis", gender: "M" },
+    { actorName: "Alan Rickman", gender: "M" },
+    { actorName: "Willem Dafoe", gender: "M" },
+    { actorName: "Uma Thurman", gender: "F" },
+    { actorName: "Lucy Liu", gender: "F" },
+    { actorName: "Daniel Craig", gender: "M" },
+    { actorName: "Eva Green", gender: "F" },
+    { actorName: "Javier Bardem", gender: "M" },
+    { actorName: "Tom Cruise", gender: "M" },
+    { actorName: "Henry Cavill", gender: "M" },
+    { actorName: "Emily Blunt", gender: "F" },
+    { actorName: "Julia Stiles", gender: "F" },
+    { actorName: "Ryan Gosling", gender: "M" },
+    { actorName: "Amy Adams", gender: "F" },
+    { actorName: "Jeremy Renner", gender: "M" },
+    { actorName: "Jessica Chastain", gender: "F" },
+    { actorName: "Domhnall Gleeson", gender: "M" },
+    { actorName: "Oscar Isaac", gender: "M" },
+    { actorName: "Keir Dullea", gender: "M" },
+    { actorName: "Gary Lockwood", gender: "M" },
+    { actorName: "Henry Thomas", gender: "M" },
+    { actorName: "Drew Barrymore", gender: "F" },
+    { actorName: "Colin Farrell", gender: "M" },
+    { actorName: "Clive Owen", gender: "M" },
+    { actorName: "Julianne Moore", gender: "F" },
+    { actorName: "Malcolm McDowell", gender: "M" },
+    { actorName: "Patrick Magee", gender: "M" },
+    { actorName: "Milla Jovovich", gender: "F" },
+    { actorName: "Jesse Eisenberg", gender: "M" },
+    { actorName: "Andrew Garfield", gender: "M" },
+    { actorName: "Daniel Day-Lewis", gender: "M" },
+    { actorName: "Paul Dano", gender: "M" },
+    { actorName: "Tommy Lee Jones", gender: "M" },
+    { actorName: "Jake Gyllenhaal", gender: "M" },
+    { actorName: "Haley Joel Osment", gender: "M" },
+    { actorName: "Ben Affleck", gender: "M" },
+    { actorName: "Rosamund Pike", gender: "F" },
+    { actorName: "Natalie Portman", gender: "F" },
+    { actorName: "Mila Kunis", gender: "F" },
+    { actorName: "Rene Russo", gender: "F" },
+    { actorName: "Toni Collette", gender: "F" },
+    { actorName: "Alex Wolff", gender: "M" },
+    { actorName: "Daniel Kaluuya", gender: "M" },
+    { actorName: "Allison Williams", gender: "F" },
+    { actorName: "Robert Englund", gender: "M" },
+    { actorName: "Heather Langenkamp", gender: "F" },
+    { actorName: "Vera Farmiga", gender: "F" },
+    { actorName: "Patrick Wilson", gender: "M" },
+    { actorName: "Bill Skarsgård", gender: "M" },
+    { actorName: "Jaeden Martell", gender: "M" },
+    { actorName: "Jamie Lee Curtis", gender: "F" },
+    { actorName: "Donald Pleasence", gender: "M" },
+    { actorName: "Ellen Burstyn", gender: "F" },
+    { actorName: "Max von Sydow", gender: "M" },
+    { actorName: "Anthony Perkins", gender: "M" },
+    { actorName: "Janet Leigh", gender: "F" },
+    { actorName: "Neve Campbell", gender: "F" },
+    { actorName: "Courteney Cox", gender: "F" },
+    { actorName: "Kristen Connolly", gender: "F" },
+    { actorName: "Chris Hemsworth", gender: "M" },
+    { actorName: "Tim Allen", gender: "M" },
+    { actorName: "Albert Brooks", gender: "M" },
+    { actorName: "Ellen DeGeneres", gender: "F" },
+    { actorName: "Matthew Broderick", gender: "M" },
+    { actorName: "James Earl Jones", gender: "M" },
+    { actorName: "Ed Asner", gender: "M" },
+    { actorName: "Christopher Plummer", gender: "M" },
+  ]);
+  const am = Object.fromEntries(actors.map(a => [a.actorName, a._id]));
+
+  // Films
+  const filmsData = [
+    { filmTitle: "Inception", releaseDate: "2010-07-16", filmDuration: 148, filmCategoryId: catMap["Sci-Fi"], actors: [am["Leonardo DiCaprio"], am["Joseph Gordon-Levitt"], am["Tom Hardy"]], description: "A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.", poster: TMDB + "/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg", hoverImage: TMDB_B + "/s3TBrRGB1iav7gFOCNx3H31MoES.jpg", rating: 4.9, price: 3.50, copies: 3 },
+    { filmTitle: "The Batman", releaseDate: "2022-03-04", filmDuration: 176, filmCategoryId: catMap["Action"], actors: [am["Robert Pattinson"]], description: "When the Riddler begins murdering key political figures in Gotham, Batman is forced to investigate the city's hidden corruption.", poster: TMDB + "/74xTEgt7R36Fpooo50r9T25onhq.jpg", hoverImage: TMDB_B + "/b0PlSFdDwbyK0cf5RxwDpaOJQvQ.jpg", rating: 4.7, price: 4.00, copies: 1 },
+    { filmTitle: "The Dark Knight", releaseDate: "2008-07-18", filmDuration: 152, filmCategoryId: catMap["Thriller"], actors: [am["Christian Bale"], am["Heath Ledger"]], description: "When the Joker wreaks havoc on Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.", poster: TMDB + "/qJ2tW6WMUDux911r6m7haRef0WH.jpg", hoverImage: TMDB_B + "/hqkIcbrOHL86UncnHIsHVcVmzue.jpg", rating: 5.0, price: 3.50, copies: 0 },
+    { filmTitle: "1917", releaseDate: "2019-12-25", filmDuration: 119, filmCategoryId: catMap["Drama"], actors: [am["George MacKay"]], description: "Two British soldiers are given an impossible mission: deliver a message deep in enemy territory that could potentially save 1,600 lives.", poster: TMDB + "/iZf0KyrE25z1sage4SYFLCCrMi9.jpg", hoverImage: TMDB_B + "/qBMsRoa3KAFfBMVuC0HcMvPzUtt.jpg", rating: 4.8, price: 3.00, copies: 5 },
+    { filmTitle: "Dune", releaseDate: "2021-10-22", filmDuration: 155, filmCategoryId: catMap["Sci-Fi"], actors: [am["Timothée Chalamet"]], description: "A noble family becomes embroiled in a war for control over the galaxy's most valuable asset while its heir becomes troubled by visions of a dark future.", poster: TMDB_B + "/jYEW5xZkZk2WTrdbMGAPFuBqbDc.jpg", hoverImage: TMDB_B + "/jYEW5xZkZk2WTrdbMGAPFuBqbDc.jpg", rating: 4.7, price: 4.00, copies: 2 },
+    { filmTitle: "Parasite", releaseDate: "2019-10-11", filmDuration: 132, filmCategoryId: catMap["Thriller"], actors: [am["Kang-ho Song"]], description: "Greed and class discrimination threaten the symbiotic relationship between the wealthy Park family and the destitute Kim clan.", poster: TMDB + "/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg", hoverImage: TMDB_B + "/ApiBzeaa95TNYLSKkwTA9J6c8jl.jpg", rating: 4.9, price: 3.50, copies: 3 },
+    { filmTitle: "Interstellar", releaseDate: "2014-11-07", filmDuration: 169, filmCategoryId: catMap["Sci-Fi"], actors: [am["Matthew McConaughey"]], description: "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.", poster: TMDB + "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", hoverImage: TMDB_B + "/rAiYTfKGqDCRIIqLpiYjcgrGBb1.jpg", rating: 4.8, price: 3.50, copies: 4 },
+    { filmTitle: "The Godfather", releaseDate: "1972-03-24", filmDuration: 175, filmCategoryId: catMap["Drama"], actors: [am["Marlon Brando"], am["Al Pacino"]], description: "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant youngest son.", poster: TMDB + "/3bhkrj58Vtu7jqIsrD94GqZ7u2h.jpg", hoverImage: TMDB_B + "/rPdtJWyfH9Sj1X8Nn473i6q2R9q.jpg", rating: 5.0, price: 3.00, copies: 6 },
+    { filmTitle: "Oppenheimer", releaseDate: "2023-07-21", filmDuration: 180, filmCategoryId: catMap["Drama"], actors: [am["Cillian Murphy"]], description: "The story of J. Robert Oppenheimer and his role in the development of the atomic bomb during World War II.", poster: TMDB + "/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg", hoverImage: TMDB_B + "/fm6KqXpk3M2HVveHwCrBSSBaO0V.jpg", rating: 4.9, price: 4.50, copies: 3 },
+    { filmTitle: "Gladiator", releaseDate: "2000-05-05", filmDuration: 155, filmCategoryId: catMap["Action"], actors: [am["Russell Crowe"]], description: "A former Roman General betrayed and sold into slavery rises through the ranks of the gladiatorial arena to seek vengeance.", poster: TMDB + "/ty8TGRuvJLPUmAR1H1nRIsgwvim.jpg", hoverImage: TMDB_B + "/6WBIzCgmDCYrqh64yDREGeDk9d3.jpg", rating: 4.8, price: 3.50, copies: 4 },
+    { filmTitle: "Pulp Fiction", releaseDate: "1994-10-14", filmDuration: 154, filmCategoryId: catMap["Thriller"], actors: [am["John Travolta"]], description: "The lives of two mob hitmen, a boxer, and a gangster intertwine in four tales of violence and redemption.", poster: TMDB + "/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg", hoverImage: TMDB_B + "/suaEOtk1N1sgg2MTM7oZd2cfVp3.jpg", rating: 5.0, price: 3.00, copies: 5 },
+    { filmTitle: "The Shawshank Redemption", releaseDate: "1994-09-23", filmDuration: 142, filmCategoryId: catMap["Drama"], actors: [am["Tim Robbins"], am["Morgan Freeman"]], description: "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.", poster: TMDB + "/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg", hoverImage: TMDB_B + "/kXfqcdQKsToO0OUXHcrrNCHDBzO.jpg", rating: 5.0, price: 3.00, copies: 7 },
+    { filmTitle: "The Matrix", releaseDate: "1999-03-31", filmDuration: 136, filmCategoryId: catMap["Sci-Fi"], actors: [am["Keanu Reeves"], am["Laurence Fishburne"]], description: "When a beautiful stranger leads computer hacker Neo to a forbidding underworld, he discovers the shocking truth--the life he knows is the elaborate deception of an evil cyber-intelligence.", poster: TMDB + "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg", hoverImage: TMDB_B + "/fNG7i7RqMErkcqhohV2a6cV1Ehy.jpg", rating: 4.9, price: 3.50, copies: 4 },
+    { filmTitle: "The Lord of the Rings: The Return of the King", releaseDate: "2003-12-17", filmDuration: 201, filmCategoryId: catMap["Action"], actors: [am["Elijah Wood"], am["Viggo Mortensen"]], description: "Gandalf and Aragorn lead the World of Men against Sauron's army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.", poster: TMDB + "/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg", rating: 5.0, price: 4.00, copies: 3 },
+    { filmTitle: "Forrest Gump", releaseDate: "1994-07-06", filmDuration: 142, filmCategoryId: catMap["Drama"], actors: [am["Tom Hanks"], am["Robin Wright"]], description: "The presidencies of Kennedy and Johnson, the events of Vietnam, Watergate and other historical events unfold through the perspective of an Alabama man with an IQ of 75.", poster: TMDB + "/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg", hoverImage: TMDB_B + "/tMha8CElGVVKFKrRSS3sPCB4MNz.jpg", rating: 4.8, price: 3.00, copies: 5 },
+    { filmTitle: "Alien", releaseDate: "1979-05-25", filmDuration: 117, filmCategoryId: catMap["Horror"], actors: [am["Sigourney Weaver"], am["Tom Skerritt"]], description: "After a space merchant vessel receives an unknown transmission as a distress call, one of the crew is attacked by a mysterious life form and they soon realize that its life cycle has merely begun.", poster: TMDB + "/vfrQk5IPloGg1v9Rzbh2Eg3VGyM.jpg", hoverImage: TMDB_B + "/cEobq5QrnOJjO6giDs8q4RxmMKh.jpg", rating: 4.7, price: 3.50, copies: 2 },
+    { filmTitle: "The Silence of the Lambs", releaseDate: "1991-01-01", filmDuration: 118, filmCategoryId: catMap["Thriller"], actors: [am["Jodie Foster"], am["Anthony Hopkins"]], description: "A young F.B.I. cadet must receive the help of an incarcerated and manipulative cannibal killer to help catch another serial killer.", poster: TMDB + "/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg", hoverImage: TMDB_B + "/aYcnDyLMnpKce1FOYUpZrXtgUye.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.88, copies: 2 },
+    { filmTitle: "Se7en", releaseDate: "1995-01-01", filmDuration: 127, filmCategoryId: catMap["Thriller"], actors: [am["Brad Pitt"], am["Morgan Freeman"]], description: "Two detectives, a rookie and a veteran, hunt a serial killer who uses the seven deadly sins as his motives.", poster:TMDB_B + "/191nKfP0ehp3uIvWqgPbFmI4lv9.jpg", hoverImage: TMDB_B + "/191nKfP0ehp3uIvWqgPbFmI4lv9.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.31, copies: 3 },
+    { filmTitle: "Fight Club", releaseDate: "1999-01-01", filmDuration: 139, filmCategoryId: catMap["Drama"], actors: [am["Edward Norton"], am["Brad Pitt"]], description: "An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into much more.", poster: TMDB + "/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg", hoverImage: TMDB_B + "/c6OLXfKAk5BKeR6broC8pYiCquX.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.97, copies: 4 },
+    { filmTitle: "Goodfellas", releaseDate: "1990-01-01", filmDuration: 146, filmCategoryId: catMap["Drama"], actors: [am["Robert De Niro"], am["Ray Liotta"]], description: "The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners Jimmy Conway and Tommy DeVito.", poster: TMDB + "/9OkCLM73MIU2CrKZbqiT8Ln1wY2.jpg", hoverImage: TMDB_B + "/gILte6Zd7m1YneIr6MVhh30S9pr.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.90, copies: 3 },
+    { filmTitle: "The Usual Suspects", releaseDate: "1995-01-01", filmDuration: 106, filmCategoryId: catMap["Thriller"], actors: [am["Kevin Spacey"], am["Gabriel Byrne"]], description: "A sole survivor tells of the twisty events leading up to a horrific gun battle on a boat, which began when five criminals met at a seemingly random police lineup.", poster: TMDB + "/99X2SgyFunJFXGAYnDv3sb9pnUD.jpg", hoverImage: TMDB_B + "/hy0Hx9fMPk2fmw26Li60z1S2giU.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.19, copies: 2 },
+    { filmTitle: "The Departed", releaseDate: "2006-01-01", filmDuration: 151, filmCategoryId: catMap["Thriller"], actors: [am["Leonardo DiCaprio"], am["Matt Damon"]], description: "An undercover cop and a mole in the police attempt to identify each other while infiltrating an Irish gang in South Boston.", poster: TMDB + "/nT97ifVT2J1yMQmeq20Qblg61T.jpg", hoverImage: TMDB_B + "/6WRrGYalXXveItfpnipYdayFkQB.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.04, copies: 2 },
+    { filmTitle: "Memento", releaseDate: "2000-01-01", filmDuration: 113, filmCategoryId: catMap["Thriller"], actors: [am["Guy Pearce"], am["Carrie-Anne Moss"]], description: "A man with short-term memory loss attempts to track down his wife's murderer.", poster: TMDB + "/fKTPH2WvH8nHTXeBYBVhawtRqtR.jpg", hoverImage: TMDB_B + "/7Wev9JMo6R5XAfz2KDvXb7oPMmy.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.23, copies: 3 },
+    { filmTitle: "The Prestige", releaseDate: "2006-01-01", filmDuration: 130, filmCategoryId: catMap["Drama"], actors: [am["Hugh Jackman"], am["Christian Bale"]], description: "After a tragic accident, two stage magicians engage in a battle to create the ultimate illusion while sacrificing everything they have to outwit each other.", poster: TMDB + "/Ag2B2KHKQPukjH7WutmgnnSNurZ.jpg", hoverImage: TMDB_B + "/z3br1ub7spqGMkxgjgJSdM4DC21.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.08, copies: 5 },
+    { filmTitle: "The Green Mile", releaseDate: "1999-01-01", filmDuration: 189, filmCategoryId: catMap["Drama"], actors: [am["Tom Hanks"], am["Michael Clarke Duncan"]], description: "The lives of guards on Death Row are affected by one of their charges: a black man accused of child murder and rape, yet who has a mysterious gift.", poster: TMDB + "/8VG8fDNiy50H4FedGwdSVUPoaJe.jpg", hoverImage: TMDB_B + "/b6HWTOxn1xevvyHU2K9ICvaRU6g.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.47, copies: 1 },
+    { filmTitle: "Schindler's List", releaseDate: "1993-01-01", filmDuration: 195, filmCategoryId: catMap["Drama"], actors: [am["Liam Neeson"], am["Ralph Fiennes"]], description: "In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.", poster: TMDB + "/sF1U4EUQS8YHUYjNl3pMGNIQyr0.jpg", hoverImage: TMDB_B + "/zb6fM1CX41D9rF9hdgclu0peUmy.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.94, copies: 1 },
+    { filmTitle: "Saving Private Ryan", releaseDate: "1998-01-01", filmDuration: 170, filmCategoryId: catMap["Action"], actors: [am["Tom Hanks"], am["Matt Damon"]], description: "Following the Normandy Landings, a group of U.S. soldiers go behind enemy lines to retrieve a paratrooper whose brothers have been killed in action.", poster: TMDB + "/uqx37cS8cpHg8U35f9U5IBlrCV3.jpg", hoverImage: TMDB_B + "/bdD39MpSVhKjxarTxLSfX6baoMP.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.95, copies: 3 },
+    { filmTitle: "Django Unchained", releaseDate: "2012-01-01", filmDuration: 165, filmCategoryId: catMap["Action"], actors: [am["Jamie Foxx"], am["Christoph Waltz"]], description: "With the help of a German bounty-hunter, a freed slave sets out to rescue his wife from a brutal plantation-owner in Mississippi.", poster: TMDB + "/7oWY8VDWW7thTzWh3OKYRkWUlD5.jpg", hoverImage: TMDB_B + "/2oZklIzUbvZXXzIFzv7Hi68d6xf.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.92, copies: 1 },
+    { filmTitle: "Inglourious Basterds", releaseDate: "2009-01-01", filmDuration: 153, filmCategoryId: catMap["Action"], actors: [am["Brad Pitt"], am["Christoph Waltz"]], description: "In Nazi-occupied France during World War II, a plan to assassinate Nazi leaders by a group of Jewish U.S. soldiers coincides with a theatre owner's vengeful plans for the same.", poster: TMDB + "/7sfbEnaARXDDhKm0CZ7D7uc2sbo.jpg", hoverImage: TMDB_B + "/hwNtEmmugU5Yd7hpfprNWI0DGIn.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.29, copies: 2 },
+    { filmTitle: "The Wolf of Wall Street", releaseDate: "2013-01-01", filmDuration: 180, filmCategoryId: catMap["Comedy"], actors: [am["Leonardo DiCaprio"], am["Jonah Hill"]], description: "Based on the true story of Jordan Belfort, from his rise to a wealthy stock-broker living the high life to his fall involving crime, corruption and the federal government.", poster: TMDB + "/kW9LmvYHAaS9iA0tHmZVq8hQYoq.jpg", hoverImage: TMDB_B + "/7Nwnmyzrtd0FkcRyPqmdzTPppQa.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.93, copies: 2 },
+    { filmTitle: "Shutter Island", releaseDate: "2010-01-01", filmDuration: 138, filmCategoryId: catMap["Thriller"], actors: [am["Leonardo DiCaprio"], am["Mark Ruffalo"]], description: "In 1954, a U.S. Marshal investigates the disappearance of a murderer who escaped from a hospital for the criminally insane.", poster: TMDB + "/nrmXQ0zcZUL8jFLrakWc90IR8z9.jpg", hoverImage: TMDB_B + "/rbZvGN1A1QyZuoKzhCw8QPmf2q0.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.58, copies: 2 },
+    { filmTitle: "Joker", releaseDate: "2019-01-01", filmDuration: 122, filmCategoryId: catMap["Drama"], actors: [am["Joaquin Phoenix"], am["Robert De Niro"]], description: "In Gotham City, mentally troubled comedian Arthur Fleck is disregarded and mistreated by society. He then embarks on a downward spiral of revolution and bloody crime.", poster: TMDB + "/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg", hoverImage: TMDB_B + "/hO7KbdvGOtDdeg0W4Y5nKEHeDDh.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.14, copies: 2 },
+    { filmTitle: "The Avengers", releaseDate: "2012-01-01", filmDuration: 143, filmCategoryId: catMap["Action"], actors: [am["Robert Downey Jr."], am["Chris Evans"]], description: "Earth's mightiest heroes must come together and learn to fight as a team if they are going to stop the mischievous Loki and his alien army from enslaving humanity.", poster: TMDB + "/RYMX2wcKCBAr24UyPD7xwmjaTn.jpg", hoverImage: TMDB_B + "/9BBTo63ANSmhC4e6r62OJFuK2GL.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.90, copies: 5 },
+    { filmTitle: "Iron Man", releaseDate: "2008-01-01", filmDuration: 126, filmCategoryId: catMap["Action"], actors: [am["Robert Downey Jr."], am["Gwyneth Paltrow"]], description: "After being held captive in an Afghan cave, billionaire engineer Tony Stark creates a unique weaponized suit of armor to fight evil.", poster: TMDB + "/78lPtwv72eTNqFW9COBYI0dWDJa.jpg", hoverImage: TMDB_B + "/cKvDv2LpwVEqbdXWoQl4XgGN6le.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 4.00, copies: 4 },
+    { filmTitle: "Guardians of the Galaxy", releaseDate: "2014-01-01", filmDuration: 121, filmCategoryId: catMap["Sci-Fi"], actors: [am["Chris Pratt"], am["Zoe Saldana"]], description: "A group of intergalactic criminals must pull together to stop a fanatical warrior with plans to purge the universe.", poster: TMDB + "/r7vmZjiyZw9rpJMQJdXpjgiCOk9.jpg", hoverImage: TMDB_B + "/uLtVbjvS1O7gXL8lUOwsFOH4man.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.07, copies: 4 },
+    { filmTitle: "Spider-Man: Into the Spider-Verse", releaseDate: "2018-01-01", filmDuration: 117, filmCategoryId: catMap["Action"], actors: [am["Shameik Moore"], am["Jake Johnson"]], description: "Teen Miles Morales becomes the Spider-Man of his universe, and must join with five spider-powered individuals from other dimensions to stop a threat for all realities.", poster: TMDB + "/iiZZdoQBEYBv6id8su7ImL0oCbD.jpg", hoverImage: TMDB_B + "/8mnXR9rey5uQ08rZAvzojKWbDQS.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.77, copies: 4 },
+    { filmTitle: "Avatar", releaseDate: "2009-01-01", filmDuration: 162, filmCategoryId: catMap["Sci-Fi"], actors: [am["Sam Worthington"], am["Zoe Saldana"]], description: "A paraplegic Marine dispatched to the moon Pandora on a unique mission becomes torn between following his orders and protecting the world he feels is his home.", poster: TMDB + "/gKY6q7SjCkAU6FqvqWybDYgUKIF.jpg", hoverImage: TMDB_B + "/vL5LR6WdxWPjLPFRLe133jXWsh5.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.92, copies: 2 },
+    { filmTitle: "The Terminator", releaseDate: "1984-01-01", filmDuration: 107, filmCategoryId: catMap["Sci-Fi"], actors: [am["Arnold Schwarzenegger"], am["Linda Hamilton"]], description: "A human soldier is sent from 2029 to 1984 to stop an almost indestructible cyborg killing machine, sent from the same year, which has been programmed to execute a young woman.", poster: TMDB + "/qvktm0BHcnmDpul4Hz01GIazWPr.jpg", hoverImage: TMDB_B + "/ffdqHMWkh1h9MABwIfbfRJhgFW6.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.20, copies: 5 },
+    { filmTitle: "Terminator 2: Judgment Day", releaseDate: "1991-01-01", filmDuration: 137, filmCategoryId: catMap["Sci-Fi"], actors: [am["Arnold Schwarzenegger"], am["Edward Furlong"]], description: "A cyborg, identical to the one who failed to kill Sarah Connor, must now protect her ten year old son John from an even more advanced and powerful cyborg.", poster: TMDB + "/jFTVD4XoWQTcg7wdyJKa8PEds5q.jpg", hoverImage: TMDB_B + "/izkMjmhauFx9DjoBQqM5sM5WAwE.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.48, copies: 1 },
+    { filmTitle: "Jurassic Park", releaseDate: "1993-01-01", filmDuration: 127, filmCategoryId: catMap["Sci-Fi"], actors: [am["Sam Neill"], am["Laura Dern"]], description: "A pragmatic paleontologist touring an almost complete theme park on an island in Central America is tasked with protecting a couple of kids after a power failure causes the park's cloned dinosaurs to run loose.", poster: TMDB + "/maFjKnJ62hDQ9E66dKqDZgbUy0H.jpg", hoverImage: TMDB_B + "/jzt9HuhIAdH9qp0K2MA1m5V8sgq.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.77, copies: 1 },
+    { filmTitle: "Back to the Future", releaseDate: "1985-01-01", filmDuration: 116, filmCategoryId: catMap["Sci-Fi"], actors: [am["Michael J. Fox"], am["Christopher Lloyd"]], description: "Marty McFly, a 17-year-old high school student, is accidentally sent thirty years into the past in a time-traveling DeLorean invented by his close friend, the eccentric scientist Doc Brown.", poster: TMDB + "/vN5B5WgYscRGcQpVhHl6p9DDTP0.jpg", hoverImage: TMDB_B + "/5bzPWQ2dFUl2aZKkp7ILJVVkRed.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.60, copies: 1 },
+    { filmTitle: "Indiana Jones and the Raiders of the Lost Ark", releaseDate: "1981-01-01", filmDuration: 115, filmCategoryId: catMap["Action"], actors: [am["Harrison Ford"], am["Karen Allen"]], description: "In 1936, archaeologist and adventurer Indiana Jones is hired by the U.S. government to find the Ark of the Covenant before Adolf Hitler's Nazis can obtain its awesome powers.", poster: TMDB + "/ceG9Vzo2t2qLMnEjV62Rk0ZcQ9n.jpg", hoverImage: TMDB_B + "/tBF5A7ANjSkPaWFGXpSiuMbHm5C.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.66, copies: 3 },
+    { filmTitle: "Star Wars", releaseDate: "1977-01-01", filmDuration: 121, filmCategoryId: catMap["Sci-Fi"], actors: [am["Mark Hamill"], am["Harrison Ford"]], description: "Luke Skywalker joins forces with a Jedi Knight, a cocky pilot, a Wookiee and two droids to save the galaxy from the Empire's world-destroying battle station.", poster: TMDB + "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg", hoverImage: TMDB_B + "/yUiXA68FfQeA8cRBhd0Ao0jIRZt.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.87, copies: 1 },
+    { filmTitle: "The Empire Strikes Back", releaseDate: "1980-01-01", filmDuration: 124, filmCategoryId: catMap["Sci-Fi"], actors: [am["Mark Hamill"], am["Harrison Ford"]], description: "After the Rebels are brutally overpowered by the Empire on the ice planet Hoth, Luke Skywalker begins Jedi training with Yoda.", poster: TMDB + "/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg", hoverImage: TMDB_B + "/aJCtkxLLzkk1pECehVjKHA2lBgw.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.55, copies: 2 },
+    { filmTitle: "The Shining", releaseDate: "1980-01-01", filmDuration: 146, filmCategoryId: catMap["Horror"], actors: [am["Jack Nicholson"], am["Shelley Duvall"]], description: "A family heads to an isolated hotel for the winter where a sinister presence influences the father into violence, while his psychic son sees horrific forebodings from both past and future.", poster: TMDB + "/lzp5K0IVklSAAvyId6TRGTqxZSX.jpg", hoverImage: TMDB_B + "/mmd1HnuvAzFc4iuVJcnBrhDNEKr.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.50, copies: 5 },
+    { filmTitle: "The Thing", releaseDate: "1982-01-01", filmDuration: 109, filmCategoryId: catMap["Horror"], actors: [am["Kurt Russell"], am["Keith David"]], description: "A research team in Antarctica is hunted by a shape-shifting alien that assumes the appearance of its victims.", poster: TMDB + "/tzGY49kseSE9QAKk47uuDGwnSCu.jpg", hoverImage: TMDB_B + "/r9leYNa8nTRCceZrZhP1DXkgKVb.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.31, copies: 4 },
+    { filmTitle: "The Truman Show", releaseDate: "1998-01-01", filmDuration: 103, filmCategoryId: catMap["Comedy"], actors: [am["Jim Carrey"], am["Ed Harris"]], description: "An insurance salesman discovers his whole life is actually a reality TV show.", poster: TMDB + "/vuza0WqY239yBXOadKlGwJsZJFE.jpg", hoverImage: TMDB_B + "/aCHn2TXYJfzPXQKA6r9mKPbMlUB.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.98, copies: 1 },
+    { filmTitle: "Groundhog Day", releaseDate: "1993-01-01", filmDuration: 101, filmCategoryId: catMap["Comedy"], actors: [am["Bill Murray"], am["Andie MacDowell"]], description: "A weatherman finds himself inexplicably living the same day over and over again.", poster: TMDB + "/gCgt1WARPZaXnq523ySQEUKinCs.jpg", hoverImage: TMDB_B + "/ttBydD0SynC0TMkW3AcnmsySkLp.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.37, copies: 1 },
+    { filmTitle: "Step Brothers", releaseDate: "2008-01-01", filmDuration: 98, filmCategoryId: catMap["Comedy"], actors: [am["Will Ferrell"], am["John C. Reilly"]], description: "Two aimless middle-aged losers still living at home are forced against their will to become roommates when their parents marry.", poster: TMDB + "/nvggBbEraUTAVR6ffP3AaBUWSHs.jpg", hoverImage: TMDB_B + "/247H2jS9Te9TTmKDcAMg3LN5gmI.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.47, copies: 3 },
+    { filmTitle: "Superbad", releaseDate: "2007-01-01", filmDuration: 113, filmCategoryId: catMap["Comedy"], actors: [am["Jonah Hill"], am["Michael Cera"]], description: "Two co-dependent high school seniors are forced to deal with separation anxiety after their plan to stage a booze-soaked party goes awry.", poster: TMDB + "/ek8e8txUyUwd2BNqj6lFEerJfbq.jpg", hoverImage: TMDB_B + "/coru98UcFBzJIU7bxZguxaePgu0.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.19, copies: 5 },
+    { filmTitle: "The Big Lebowski", releaseDate: "1998-01-01", filmDuration: 117, filmCategoryId: catMap["Comedy"], actors: [am["Jeff Bridges"], am["John Goodman"]], description: "Jeff `The Dude` Lebowski, mistaken for a millionaire of the same name, seeks restitution for his ruined rug and enlists his bowling buddies to help get it.", poster: TMDB + "/3bv6WAp6BSxxYvB5ozKFUYuRA8C.jpg", hoverImage: TMDB_B + "/hXsy4XCCHrUk81XoRhcooyWejao.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.84, copies: 2 },
+    { filmTitle: "Hot Fuzz", releaseDate: "2007-01-01", filmDuration: 121, filmCategoryId: catMap["Comedy"], actors: [am["Simon Pegg"], am["Nick Frost"]], description: "A skilled London police officer is transferred to a small town with a dark secret.", poster: TMDB + "/zPib4ukTSdXvHP9pxGkFCe34f3y.jpg", hoverImage: TMDB_B + "/9rMSCFH9zhv1vILpEZQlUJs9iUm.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.27, copies: 1 },
+    { filmTitle: "Shaun of the Dead", releaseDate: "2004-01-01", filmDuration: 99, filmCategoryId: catMap["Comedy"], actors: [am["Simon Pegg"], am["Nick Frost"]], description: "A man's uneventful life is disrupted by the zombie apocalypse.", poster: TMDB + "/dgXPhzNJH8HFTBjXPB177yNx6RI.jpg", hoverImage: TMDB_B + "/wb34q3VgzHgL8frVMywrN3wXmqx.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.17, copies: 1 },
+    { filmTitle: "Anchorman: The Legend of Ron Burgundy", releaseDate: "2004-01-01", filmDuration: 94, filmCategoryId: catMap["Comedy"], actors: [am["Will Ferrell"], am["Paul Rudd"]], description: "Ron Burgundy is San Diego's top-rated newsman in the male-dominated broadcasting of the 1970s, but that's all about to change for Ron and his cronies when an ambitious woman is hired as a new anchor.", poster: TMDB + "/mhZIcRePT7U8viFQVjt1ZjYIsR4.jpg", hoverImage: TMDB_B + "/qWSI9Lpq8K4o1n9ZD9zUVD4Gds1.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.82, copies: 4 },
+    { filmTitle: "Bridesmaids", releaseDate: "2011-01-01", filmDuration: 125, filmCategoryId: catMap["Comedy"], actors: [am["Kristen Wiig"], am["Maya Rudolph"]], description: "Competition between the maid of honor and a bridesmaid, over who is the bride's best friend, threatens to upend the life of an out-of-work pastry chef.", poster: TMDB + "/gJtA7hYsBMQ7EM3sPBMUdBfU7a0.jpg", hoverImage: TMDB_B + "/nffFQ64Jr9EombwzB1oHXBYLXkT.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.54, copies: 2 },
+    { filmTitle: "The Hangover", releaseDate: "2009-01-01", filmDuration: 100, filmCategoryId: catMap["Comedy"], actors: [am["Bradley Cooper"], am["Zach Galifianakis"]], description: "Three buddies wake up from a bachelor party in Las Vegas, with no memory of the previous night and the bachelor missing.", poster: TMDB + "/A0uS9rHR56FeBtpjVki16M5xxSW.jpg", hoverImage: TMDB_B + "/iuRVt8tFiXDPGgzavhuSa3QHRxD.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.55, copies: 3 },
+    { filmTitle: "Mad Max: Fury Road", releaseDate: "2015-01-01", filmDuration: 120, filmCategoryId: catMap["Action"], actors: [am["Tom Hardy"], am["Charlize Theron"]], description: "In a post-apocalyptic wasteland, a woman rebels against a tyrannical ruler in search for her homeland with the aid of a group of female prisoners, a psychotic worshiper, and a drifter named Max.", poster: TMDB + "/hA2ple9q4qnwxp3hKVNhroipsir.jpg", hoverImage: TMDB_B + "/uT895WNwm0aIJRtGizcQhrejWUo.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.16, copies: 1 },
+    { filmTitle: "Die Hard", releaseDate: "1988-01-01", filmDuration: 132, filmCategoryId: catMap["Action"], actors: [am["Bruce Willis"], am["Alan Rickman"]], description: "An NYPD officer tries to save his wife and several others taken hostage by German terrorists during a Christmas party at the Nakatomi Plaza in Los Angeles.", poster: TMDB + "/7Bjd8kfmDSOzpmhySpEhkUyK2oH.jpg", hoverImage: TMDB_B + "/bvk2AAH64lP2YZs02Q3jskfHT8j.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.49, copies: 2 },
+    { filmTitle: "John Wick", releaseDate: "2014-01-01", filmDuration: 101, filmCategoryId: catMap["Action"], actors: [am["Keanu Reeves"], am["Willem Dafoe"]], description: "An ex-hit-man comes out of retirement to track down the gangsters that killed his dog and took everything from him.", poster: TMDB + "/wXqWR7dHncNRbxoEGybEy7QTe9h.jpg", hoverImage: TMDB_B + "/ff2ti5DkA9UYLzyqhQfI2kZqEuh.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.95, copies: 4 },
+    { filmTitle: "The Dark Knight Rises", releaseDate: "2012-01-01", filmDuration: 164, filmCategoryId: catMap["Action"], actors: [am["Christian Bale"], am["Tom Hardy"]], description: "Eight years after the Joker's reign of anarchy, Batman, with the help of the enigmatic Catwoman, is forced from his exile to save Gotham City from the brutal guerrilla terrorist Bane.", poster: TMDB + "/hr0L2aueqlP2BYUblTTjmtn0hw4.jpg", hoverImage: TMDB_B + "/y2DB71C4nyIdMrANijz8mzvQtk6.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.94, copies: 5 },
+    { filmTitle: "Kill Bill: Vol. 1", releaseDate: "2003-01-01", filmDuration: 111, filmCategoryId: catMap["Action"], actors: [am["Uma Thurman"], am["Lucy Liu"]], description: "After awakening from a four-year coma, a former assassin wreaks vengeance on the team of assassins who betrayed her.", poster: TMDB + "/v7TaX8kXMXs5yFFGR41guUDNcnB.jpg", hoverImage: TMDB_B + "/iffzIhuLAO38Po6sh1s6ZEVwlNL.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.70, copies: 5 },
+    { filmTitle: "Casino Royale", releaseDate: "2006-01-01", filmDuration: 144, filmCategoryId: catMap["Action"], actors: [am["Daniel Craig"], am["Eva Green"]], description: "After earning 00 status and a licence to kill, Secret Agent James Bond sets out on his first mission as 007.", poster: TMDB + "/lMrxYKKhd4lqRzwUHAy5gcx9PSO.jpg", hoverImage: TMDB_B + "/klJMCIblHLFwCuGjKz7tyOpekIC.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.26, copies: 5 },
+    { filmTitle: "Skyfall", releaseDate: "2012-01-01", filmDuration: 143, filmCategoryId: catMap["Action"], actors: [am["Daniel Craig"], am["Javier Bardem"]], description: "James Bond's loyalty to M is tested when her past comes back to haunt her. When MI6 comes under attack, 007 must track down and destroy the threat, no matter how personal the cost.", poster: TMDB + "/d0IVecFQvsGdSbnMAHqiYsNYaJT.jpg", hoverImage: TMDB_B + "/qB2eFmGEh5YCzhXUpz7As2PaDCh.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.10, copies: 5 },
+    { filmTitle: "Mission: Impossible - Fallout", releaseDate: "2018-01-01", filmDuration: 147, filmCategoryId: catMap["Action"], actors: [am["Tom Cruise"], am["Henry Cavill"]], description: "Ethan Hunt and his IMF team, along with some familiar allies, race against time after a mission gone wrong.", poster: TMDB + "/AkJQpZp9WoNdj7pLYSj1L0RcMMN.jpg", hoverImage: TMDB_B + "/5jnoAA74Qwb5w6B9FMvnc20n6Ie.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.36, copies: 5 },
+    { filmTitle: "The Bourne Ultimatum", releaseDate: "2007-01-01", filmDuration: 115, filmCategoryId: catMap["Action"], actors: [am["Matt Damon"], am["Julia Stiles"]], description: "Jason Bourne dodges a ruthless C.I.A. official and his Agents from a new assassination program while searching for the origins of his life as a trained killer.", poster: TMDB + "/15rMz5MRXFp7CP4VxhjYw4y0FUn.jpg", hoverImage: TMDB_B + "/qiBILuWhv7ipF0pxiEqIJdkQzj8.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.40, copies: 4 },
+    { filmTitle: "Edge of Tomorrow", releaseDate: "2014-01-01", filmDuration: 113, filmCategoryId: catMap["Action"], actors: [am["Tom Cruise"], am["Emily Blunt"]], description: "A soldier fighting aliens gets to relive the same day over and over again, the day restarting every time he dies.", poster: TMDB + "/nBM9MMa2WCwvMG4IJ3eiGUdbPe6.jpg", hoverImage: TMDB_B + "/4V1yIoAKPMRQwGBaSses8Bp2nsi.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.21, copies: 2 },
+    { filmTitle: "Blade Runner 2049", releaseDate: "2017-01-01", filmDuration: 164, filmCategoryId: catMap["Sci-Fi"], actors: [am["Ryan Gosling"], am["Harrison Ford"]], description: "Young Blade Runner K's discovery of a long-buried secret leads him to track down former Blade Runner Rick Deckard, who's been missing for thirty years.", poster: TMDB + "/gajva2L0rPYkEWjzgFlBXCAVBE5.jpg", hoverImage: TMDB_B + "/askFH4GSk2u9z3ZE5ypdKIMeqLJ.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.17, copies: 3 },
+    { filmTitle: "Arrival", releaseDate: "2016-01-01", filmDuration: 116, filmCategoryId: catMap["Sci-Fi"], actors: [am["Amy Adams"], am["Jeremy Renner"]], description: "A linguist works with the military to communicate with alien lifeforms after twelve mysterious spacecraft appear around the world.", poster: TMDB + "/pEzNVQfdzYDzVK0XqxERIw2x2se.jpg", hoverImage: TMDB_B + "/uKPbFF08QkRMvIAsgCh1soeyPhZ.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.41, copies: 5 },
+    { filmTitle: "The Martian", releaseDate: "2015-01-01", filmDuration: 144, filmCategoryId: catMap["Sci-Fi"], actors: [am["Matt Damon"], am["Jessica Chastain"]], description: "An astronaut becomes stranded on Mars after his team assume him dead, and must rely on his ingenuity to find a way to signal to Earth that he is alive.", poster: TMDB + "/fASz8A0yFE3QB6LgGoOfwvFSseV.jpg", hoverImage: TMDB_B + "/lzMS0CI3FLQYC5EgJoWeIaEt0lm.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.54, copies: 4 },
+    { filmTitle: "Ex Machina", releaseDate: "2014-01-01", filmDuration: 108, filmCategoryId: catMap["Sci-Fi"], actors: [am["Domhnall Gleeson"], am["Oscar Isaac"]], description: "A young programmer is selected to participate in a ground-breaking experiment in synthetic intelligence by evaluating the human qualities of a highly advanced humanoid A.I.", poster: TMDB + "/dmJW8IAKHKxFNiUnoDR7JfsK7Rp.jpg", hoverImage: TMDB_B + "/uqOuJ50EtTj7kkDIXP8LCg7G45D.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.79, copies: 1 },
+    { filmTitle: "2001: A Space Odyssey", releaseDate: "1968-01-01", filmDuration: 149, filmCategoryId: catMap["Sci-Fi"], actors: [am["Keir Dullea"], am["Gary Lockwood"]], description: "After discovering a mysterious artifact buried beneath the Lunar surface, mankind sets off on a quest to find its origins with help from intelligent supercomputer H.A.L. 9000.", poster: TMDB + "/ve72VxNqjGM69Uky4WTo2bK6rfq.jpg", hoverImage: TMDB_B + "/w5IDXtifKntw0ajv2co7jFlTQDM.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.66, copies: 2 },
+    { filmTitle: "E.T. the Extra-Terrestrial", releaseDate: "1982-01-01", filmDuration: 115, filmCategoryId: catMap["Sci-Fi"], actors: [am["Henry Thomas"], am["Drew Barrymore"]], description: "A troubled child summons the courage to help a friendly alien escape Earth and return to his home world.", poster: TMDB + "/an0nD6uq6byfxXCfk6lQBzdL2J1.jpg", hoverImage: TMDB_B + "/mXLVA0YL6tcXi6SJSuAh9ONXFj5.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.70, copies: 2 },
+    { filmTitle: "Minority Report", releaseDate: "2002-01-01", filmDuration: 145, filmCategoryId: catMap["Sci-Fi"], actors: [am["Tom Cruise"], am["Colin Farrell"]], description: "In a future where a special police unit is able to arrest murderers before they commit their crimes, an officer from that unit is himself accused of a future murder.", poster: TMDB + "/ccqpHq5tk5W4ymbSbuoy4uYOxFI.jpg", hoverImage: TMDB_B + "/PrMb3oeEluauy0q9ZO5xL33A6C.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.71, copies: 3 },
+    { filmTitle: "Children of Men", releaseDate: "2006-01-01", filmDuration: 109, filmCategoryId: catMap["Sci-Fi"], actors: [am["Clive Owen"], am["Julianne Moore"]], description: "In 2027, in a chaotic world in which women have become somehow infertile, a former activist agrees to help transport a miraculously pregnant woman to a sanctuary at sea.", poster: TMDB + "/k9IAS4TehZFcKi4HVByxZNPfqex.jpg", hoverImage: TMDB_B + "/gFGLwUBhVrq0bq4j9DU08xQDRU2.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.08, copies: 2 },
+    { filmTitle: "A Clockwork Orange", releaseDate: "1971-01-01", filmDuration: 136, filmCategoryId: catMap["Sci-Fi"], actors: [am["Malcolm McDowell"], am["Patrick Magee"]], description: "In the future, a sadistic gang leader is imprisoned and volunteers for a conduct-aversion experiment, but it doesn't go as planned.", poster: TMDB + "/4sHeTAp65WrSSuc05nRBKddhBxO.jpg", hoverImage: TMDB_B + "/nLFxvLokHe3bQmrmAfljIfax2jQ.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.62, copies: 5 },
+    { filmTitle: "The Fifth Element", releaseDate: "1997-01-01", filmDuration: 126, filmCategoryId: catMap["Sci-Fi"], actors: [am["Bruce Willis"], am["Milla Jovovich"]], description: "In the colorful future, a cab driver unwittingly becomes the central figure in the search for a legendary cosmic weapon to keep Evil and Mr. Zorg at bay.", poster: TMDB + "/fPtlCO1yQtnoLHOwKtWz7db6RGU.jpg", hoverImage: TMDB_B + "/jW21PoKwqs79wk6bfiYezox63mK.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.62, copies: 4 },
+    { filmTitle: "The Social Network", releaseDate: "2010-01-01", filmDuration: 120, filmCategoryId: catMap["Drama"], actors: [am["Jesse Eisenberg"], am["Andrew Garfield"]], description: "As Harvard student Mark Zuckerberg creates the social networking site that would become known as Facebook, he is sued by the twins who claimed he stole their idea.", poster: TMDB + "/n0ybibhJtQ5icDqTp8eRytcIHJx.jpg", hoverImage: TMDB_B + "/1GlZNA9L5trst3ItgRiyQTUH1uf.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.85, copies: 5 },
+    { filmTitle: "There Will Be Blood", releaseDate: "2007-01-01", filmDuration: 158, filmCategoryId: catMap["Drama"], actors: [am["Daniel Day-Lewis"], am["Paul Dano"]], description: "A story of family, religion, hatred, oil and madness, focusing on a turn-of-the-century prospector in the early days of the business.", poster: TMDB + "/fa0RDkAlCec0STeMNAhPaF89q6U.jpg", hoverImage: TMDB_B + "/9UAKA6ceZi6TgQwTAAMt7DWwYPI.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.60, copies: 2 },
+    { filmTitle: "No Country for Old Men", releaseDate: "2007-01-01", filmDuration: 122, filmCategoryId: catMap["Thriller"], actors: [am["Tommy Lee Jones"], am["Javier Bardem"]], description: "Violence and mayhem ensue after a hunter stumbles upon a drug deal gone wrong and more than two million dollars in cash near the Rio Grande.", poster: TMDB + "/6d5XOczc226jECq0LIX0siKtgHR.jpg", hoverImage: TMDB_B + "/gddUsvfyySrM5k8B8wwJy2VRlBx.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.08, copies: 1 },
+    { filmTitle: "Zodiac", releaseDate: "2007-01-01", filmDuration: 157, filmCategoryId: catMap["Thriller"], actors: [am["Jake Gyllenhaal"], am["Mark Ruffalo"]], description: "In the late 1960s/early 1970s, a San Francisco cartoonist becomes an amateur detective obsessed with tracking down the Zodiac Killer.", poster: TMDB + "/6YmeO4pB7XTh8P8F960O1uA14JO.jpg", hoverImage: TMDB_B + "/3zCPI4JFc54xvLaJ71oI2KoP3az.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.35, copies: 1 },
+    { filmTitle: "The Sixth Sense", releaseDate: "1999-01-01", filmDuration: 107, filmCategoryId: catMap["Thriller"], actors: [am["Bruce Willis"], am["Haley Joel Osment"]], description: "A boy who communicates with spirits seeks the help of a disheartened child psychologist.", poster: TMDB + "/vOyfUXNFSnaTk7Vk5AjpsKTUWsu.jpg", hoverImage: TMDB_B + "/6TjllWT3cGrPFyqDXurVZ3L8bBi.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.70, copies: 2 },
+    { filmTitle: "Gone Girl", releaseDate: "2014-01-01", filmDuration: 149, filmCategoryId: catMap["Thriller"], actors: [am["Ben Affleck"], am["Rosamund Pike"]], description: "With his wife's disappearance having become the focus of an intense media circus, a man sees the spotlight turned on him when it's suspected that he may not be innocent.", poster: TMDB + "/ts996lKsxvjkO2yiYG0ht4qAicO.jpg", hoverImage: TMDB_B + "/iWak7wT0j6ycCc8lKr4NBz9c7n5.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.11, copies: 4 },
+    { filmTitle: "Black Swan", releaseDate: "2010-01-01", filmDuration: 108, filmCategoryId: catMap["Thriller"], actors: [am["Natalie Portman"], am["Mila Kunis"]], description: "A committed dancer struggles to maintain her sanity after winning the lead role in a production of Tchaikovsky's `Swan Lake`.", poster: TMDB + "/viWheBd44bouiLCHgNMvahLThqx.jpg", hoverImage: TMDB_B + "/g0geLM1zXpLb9mpqKw1ePcA5bTJ.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.63, copies: 5 },
+    { filmTitle: "Nightcrawler", releaseDate: "2014-01-01", filmDuration: 117, filmCategoryId: catMap["Thriller"], actors: [am["Jake Gyllenhaal"], am["Rene Russo"]], description: "When Louis Bloom, a con man desperate for work, muscles into the world of L.A. crime journalism, he blurs the line between observer and participant to become the star of his own story.", poster: TMDB + "/j9HrX8f7GbZQm1BrBiR40uFQZSb.jpg", hoverImage: TMDB_B + "/bdI6U1mT0kCdTJ6TWtiFxQ42GSn.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.99, copies: 3 },
+    { filmTitle: "Heat", releaseDate: "1995-01-01", filmDuration: 170, filmCategoryId: catMap["Thriller"], actors: [am["Al Pacino"], am["Robert De Niro"]], description: "A group of high-end professional thieves start to feel the heat from the LAPD when they unknowingly leave a clue at their latest heist.", poster: TMDB + "/umSVjVdbVwtx5ryCA2QXL44Durm.jpg", hoverImage: TMDB_B + "/xKsnZDERG1dk95wuZ5q9iks3OL3.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.99, copies: 4 },
+    { filmTitle: "Prisoners", releaseDate: "2013-01-01", filmDuration: 153, filmCategoryId: catMap["Thriller"], actors: [am["Hugh Jackman"], am["Jake Gyllenhaal"]], description: "When Keller Dover's daughter and her friend go missing, he takes matters into his own hands as the police pursue multiple leads and the pressure mounts.", poster: TMDB + "/jsS3a3ep2KyBVmmiwaz3LvK49b1.jpg", hoverImage: TMDB_B + "/n1ItmvzsDV5yLgDodSCLZpFlsP6.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.82, copies: 3 },
+    { filmTitle: "Hereditary", releaseDate: "2018-01-01", filmDuration: 127, filmCategoryId: catMap["Horror"], actors: [am["Toni Collette"], am["Alex Wolff"]], description: "A grieving family is haunted by tragic and disturbing occurrences.", poster: TMDB + "/hjlZSXM86wJrfCv5VKfR5DI2VeU.jpg", hoverImage: TMDB_B + "/gJbTXKNTL6O7r7PzF6ZRkJGBlPp.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.28, copies: 3 },
+    { filmTitle: "Get Out", releaseDate: "2017-01-01", filmDuration: 104, filmCategoryId: catMap["Horror"], actors: [am["Daniel Kaluuya"], am["Allison Williams"]], description: "A young African-American visits his white girlfriend's parents for the weekend, where his simmering uneasiness about their reception of him eventually reaches a boiling point.", poster: TMDB + "/mE24wUCfjK8AoBBjaMjho7Rczr7.jpg", hoverImage: TMDB_B + "/o8dPH0ZSIyyViP6rjRX1djwCUwI.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.36, copies: 2 },
+    { filmTitle: "A Nightmare on Elm Street", releaseDate: "1984-01-01", filmDuration: 91, filmCategoryId: catMap["Horror"], actors: [am["Robert Englund"], am["Heather Langenkamp"]], description: "The monstrous spirit of a slain child murderer seeks revenge by invading the dreams of teenagers whose parents were responsible for his untimely death.", poster: TMDB + "/wGTpGGRMZmyFCcrY2YoxVTIBlli.jpg", hoverImage: TMDB_B + "/nzSjTiecdosBfwMGAdpt9CxltCI.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.94, copies: 2 },
+    { filmTitle: "The Conjuring", releaseDate: "2013-01-01", filmDuration: 112, filmCategoryId: catMap["Horror"], actors: [am["Vera Farmiga"], am["Patrick Wilson"]], description: "Paranormal investigators Ed and Lorraine Warren work to help a family terrorized by a dark presence in their farmhouse.", poster: TMDB + "/wVYREutTvI2tmxr6ujrHT704wGF.jpg", hoverImage: TMDB_B + "/ecKQlAEG95k62SMGhvX83oEqANK.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.22, copies: 5 },
+    { filmTitle: "It", releaseDate: "2017-01-01", filmDuration: 135, filmCategoryId: catMap["Horror"], actors: [am["Bill Skarsgård"], am["Jaeden Martell"]], description: "In the summer of 1989, a group of bullied kids band together to destroy a shape-shifting monster, which disguises itself as a clown and preys on the children of Derry.", poster: TMDB + "/9E2y5Q7WlCVNEhP5GiVTjhEhx1o.jpg", hoverImage: TMDB_B + "/qVGpxnjrGlHaSTCqTQI6viBDSfp.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.61, copies: 2 },
+    { filmTitle: "Halloween", releaseDate: "1978-01-01", filmDuration: 91, filmCategoryId: catMap["Horror"], actors: [am["Jamie Lee Curtis"], am["Donald Pleasence"]], description: "Fifteen years after murdering his sister on Halloween night 1963, Michael Myers escapes from a mental hospital and returns to the small town of Haddonfield, Illinois to kill again.", poster: TMDB + "/wijlZ3HaYMvlDTPqJoTCWKFkCPU.jpg", hoverImage: TMDB_B + "/sHI9xlFRWCJ38AIIfOqnGjuEvXz.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.69, copies: 5 },
+    { filmTitle: "The Exorcist", releaseDate: "1973-01-01", filmDuration: 122, filmCategoryId: catMap["Horror"], actors: [am["Ellen Burstyn"], am["Max von Sydow"]], description: "When a 12-year-old girl is possessed by a mysterious entity, her mother seeks the help of two priests to save her.", poster: TMDB + "/5x0CeVHJI8tcDx8tUUwYHQSNILq.jpg", hoverImage: TMDB_B + "/xcjJ5khg2yzOa282mza39Lbrm7j.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.47, copies: 2 },
+    { filmTitle: "Psycho", releaseDate: "1960-01-01", filmDuration: 109, filmCategoryId: catMap["Horror"], actors: [am["Anthony Perkins"], am["Janet Leigh"]], description: "A Phoenix secretary embezzles $40,000 from her employer's client, goes on the run, and checks into a remote motel run by a young man under the domination of his mother.", poster: TMDB + "/yz4QVqPx3h1hD1DfqqQkCq3rmxW.jpg", hoverImage: TMDB_B + "/mufF1aYvwdpKerhq5R1YrVcbJLY.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.73, copies: 5 },
+    { filmTitle: "Scream", releaseDate: "1996-01-01", filmDuration: 111, filmCategoryId: catMap["Horror"], actors: [am["Neve Campbell"], am["Courteney Cox"]], description: "A year after the murder of her mother, a teenage girl is terrorized by a new killer, who targets the girl and her friends by using horror films as part of a deadly game.", poster: TMDB + "/lr9ZIrmuwVmZhpZuTCW8D9g0ZJe.jpg", hoverImage: TMDB_B + "/vh7np635kDIcfO6x2Y9ElgLJsuI.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.47, copies: 2 },
+    { filmTitle: "The Cabin in the Woods", releaseDate: "2011-01-01", filmDuration: 95, filmCategoryId: catMap["Horror"], actors: [am["Kristen Connolly"], am["Chris Hemsworth"]], description: "Five friends go for a break at a remote cabin, where they get more than they bargained for, discovering the truth behind the cabin in the woods.", poster: TMDB + "/zZZe5wn0udlhMtdlDjN4NB72R6e.jpg", hoverImage: TMDB_B + "/dWLoSzvw52y1gt7ni9gZXdy693e.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.12, copies: 5 },
+    { filmTitle: "Toy Story", releaseDate: "1995-01-01", filmDuration: 81, filmCategoryId: catMap["Comedy"], actors: [am["Tom Hanks"], am["Tim Allen"]], description: "A cowboy doll is profoundly threatened and jealous when a new spaceman figure supplants him as top toy in a boy's room.", poster: TMDB + "/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg", hoverImage: TMDB_B + "/3Rfvhy1Nl6sSGJwyjb0QiZzZYlB.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.77, copies: 3 },
+    { filmTitle: "Finding Nemo", releaseDate: "2003-01-01", filmDuration: 100, filmCategoryId: catMap["Comedy"], actors: [am["Albert Brooks"], am["Ellen DeGeneres"]], description: "After his son is captured in the Great Barrier Reef and taken to Sydney, a timid clownfish sets out on a journey to bring him home.", poster: TMDB + "/eHuGQ10FUzK1mdOY69wF5pGgEf5.jpg", hoverImage: TMDB_B + "/eCynaAOgYYiw5yN5lBwz3IxqvaW.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.34, copies: 3 },
+    { filmTitle: "The Lion King", releaseDate: "1994-01-01", filmDuration: 88, filmCategoryId: catMap["Drama"], actors: [am["Matthew Broderick"], am["James Earl Jones"]], description: "Lion prince Simba and his father are targeted by his bitter uncle, who wants to ascend the throne himself.", poster: TMDB + "/sKCr78MXSLixwmZ8DyJLrpMsd15.jpg", hoverImage: TMDB_B + "/6GF9uJs7AnbcJvyfoZyjZv063Oo.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 3.90, copies: 2 },
+    { filmTitle: "Up", releaseDate: "2009-01-01", filmDuration: 96, filmCategoryId: catMap["Comedy"], actors: [am["Ed Asner"], am["Christopher Plummer"]], description: "78-year-old Carl Fredricksen travels to Paradise Falls in his house equipped with balloons, inadvertently taking a young stowaway.", poster: TMDB + "/mFvoEwSfLqbcWwFsDjQebn9bzFe.jpg", hoverImage: TMDB_B + "/hGGC9gKo7CFE3fW07RA587e5kol.jpg", rating: (Math.random() * 1.5 + 3.5).toFixed(1), price: 2.86, copies: 5 },
+
+
+
+  ];
+
+
+  for (const fd of filmsData) {
+    const { copies, ...filmData } = fd;
+    const film = await FilmTitle.create(filmData);
+    if (copies > 0) {
+      await FilmCopy.insertMany(Array.from({ length: copies }, () => ({ filmId: film._id })));
+    }
+  }
+
+  // Admin member
+  const existing = await Member.findOne({ email: "admin@cinevault.com" });
+  if (!existing) {
+    await Member.create({
+      memberName: "Admin",
+      email: "admin@cinevault.com",
+      password: "Admin1234",
+      isAdmin: true,
+      balance: 200,
+    });
+  }
+
+  console.log(" Seeding complete!");
+  //  NO process.exit() here — this would kill the server!
+};
+
+// Only run directly if called as: node seed.js
+if (require.main === module) {
+  connectDB()
+    .then(() => seed())
+    .then(() => { console.log("Seed complete"); process.exit(0); })
+    .catch((err) => { console.error(err); process.exit(1); });
+}
+
+module.exports = seed;

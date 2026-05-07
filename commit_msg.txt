@@ -1,0 +1,6 @@
+Initial Commit: CineVault DVD Rental System
+
+Directory Structure:
+- cinevault-backend/: Node.js & Express API with MongoDB
+- cinevault-react/: React 19 Frontend application
+- docs/: Enterprise-grade technical documentation

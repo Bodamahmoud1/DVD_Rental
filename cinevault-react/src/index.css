@@ -1,0 +1,588 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "DM Sans", sans-serif;
+  background: #FAF7F2;
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track  { background: #FAF7F2; }
+::-webkit-scrollbar-thumb  { background: #E8E2D9; border-radius: 3px; }
+
+a { text-decoration: none; color: inherit; }
+button { font-family: "DM Sans", sans-serif; }
+input, select, textarea { font-family: "DM Sans", sans-serif; }
+
+/* Bootstrap overrides */
+.container-fluid { padding: 0; }
+
+/* ═══════════════════════════════════════════════════════════
+   FILM CARD  —  Cinematic hover system
+   All motion uses opacity + transform (GPU composited).
+   No layout-triggering properties are animated.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Card shell ── */
+.film-card {
+  position: relative;
+  background: #111;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  /* floating lift */
+  transform: translateY(0) scale(1);
+  transition:
+    transform  400ms cubic-bezier(.25,.46,.45,.94),
+    box-shadow 400ms cubic-bezier(.25,.46,.45,.94),
+    border-color 400ms ease;
+  will-change: transform, box-shadow;
+}
+
+.film-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow:
+    0 0  0   1px  rgba(201,168,76,.35),
+    0 8px 32px -4px rgba(0,0,0,.7),
+    0 24px 64px -8px rgba(0,0,0,.55),
+    0 0  40px -10px rgba(201,168,76,.18); /* gold ambient glow */
+  border-color: rgba(201,168,76,.4);
+}
+
+/* ── Poster container (2:3 aspect) ── */
+.fc-poster {
+  position: relative;
+  aspect-ratio: 2/3;
+  overflow: hidden;
+  background: #0D0D0D;
+}
+
+/* ── Layer 1 — main poster ── */
+.fc-poster-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1);
+  transform-origin: center center;
+  transition: transform 500ms cubic-bezier(.25,.46,.45,.94);
+  will-change: transform;
+}
+
+.film-card:hover .fc-poster-img {
+  transform: scale(1.08);
+}
+
+/* ── Fallback gradient ── */
+.fc-poster-fallback {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, #0f3460, #533483);
+  align-items: center;
+  justify-content: center;
+}
+.fc-poster-fallback span {
+  font-family: "Playfair Display", serif;
+  color: rgba(255,255,255,.7);
+  font-size: 14px;
+  text-align: center;
+  padding: 0 12px;
+}
+
+/* ── Layer 2 — hover backdrop image ── */
+.fc-hover-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center top;
+  opacity: 0;
+  transform: scale(1.1);
+  transition:
+    opacity  450ms cubic-bezier(.25,.46,.45,.94),
+    transform 500ms cubic-bezier(.25,.46,.45,.94);
+  will-change: opacity, transform;
+}
+
+.film-card:hover .fc-hover-img {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── Layer 3 — cinematic dark overlay ── */
+/* Combines:  subtle blur vignette + rich gradient bottom blackout */
+.fc-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background:
+    /* top vignette */
+    radial-gradient(ellipse at 50% 0%,   rgba(0,0,0,.55) 0%, transparent 70%),
+    /* bottom blackout for text legibility */
+    linear-gradient(to top,
+      rgba(0,0,0,.95) 0%,
+      rgba(0,0,0,.7)  30%,
+      rgba(0,0,0,.2)  60%,
+      transparent     100%
+    ),
+    /* cinematic amber tint */
+    linear-gradient(160deg, rgba(8,8,20,.3) 0%, transparent 60%);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+  transition: opacity 400ms ease;
+  will-change: opacity;
+}
+
+.film-card:hover .fc-overlay {
+  opacity: 1;
+}
+
+/* ── Layer 4 — hover metadata (slides up) ── */
+.fc-hover-meta {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  padding: 0 14px 16px;
+  transform: translateY(12px);
+  opacity: 0;
+  transition:
+    opacity   350ms ease 80ms,
+    transform 400ms cubic-bezier(.25,.46,.45,.94) 80ms;
+  will-change: opacity, transform;
+}
+
+.film-card:hover .fc-hover-meta {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.fc-hover-genre {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #F0D080;
+  background: rgba(201,168,76,.18);
+  border: 1px solid rgba(201,168,76,.35);
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-bottom: 6px;
+}
+
+.fc-hover-title {
+  font-family: "Playfair Display", serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 6px;
+  line-height: 1.25;
+  text-shadow: 0 1px 8px rgba(0,0,0,.8);
+}
+
+.fc-hover-stats {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.fc-hover-star {
+  font-size: 11px;
+  color: #F0D080;
+  font-weight: 600;
+}
+
+.fc-hover-dur {
+  font-size: 10.5px;
+  color: rgba(255,255,255,.55);
+}
+
+/* ── Badges ── */
+.fc-badge {
+  position: absolute;
+  top: 10px;
+  font-size: 9.5px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 5;
+  font-weight: 500;
+  transition: opacity 300ms ease;
+}
+
+.fc-badge-year {
+  left: 10px;
+  background: rgba(0,0,0,.6);
+  color: rgba(255,255,255,.9);
+}
+
+.fc-badge-avail {
+  right: 10px;
+}
+
+.fc-badge-avail--yes {
+  background: rgba(27,107,74,.88);
+  color: #a8f0c6;
+}
+
+.fc-badge-avail--no {
+  background: rgba(176,58,46,.88);
+  color: #f5b7b1;
+}
+
+/* ── Info row (below poster) ── */
+.fc-info {
+  padding: 12px 14px 14px;
+  background: #fff;
+}
+
+.fc-title {
+  font-family: "Playfair Display", serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0D0D0D;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fc-sub {
+  font-size: 11.5px;
+  color: #9A9A9A;
+  margin-bottom: 8px;
+}
+
+.fc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.fc-price {
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Playfair Display", serif;
+}
+
+.fc-rating {
+  font-size: 11.5px;
+  color: #9A9A9A;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.fc-star { color: #C9A84C; }
+
+.fc-reviews { color: #B0B0B0; }
+
+/* ── Rent button ── */
+.fc-btn {
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 200ms ease, transform 150ms ease, box-shadow 200ms ease;
+}
+
+.fc-btn--active {
+  background: #0D0D0D;
+  color: #fff;
+}
+
+.fc-btn--active:hover {
+  background: #1a1a1a;
+  transform: scale(1.01);
+  box-shadow: 0 2px 12px rgba(0,0,0,.25);
+}
+
+.fc-btn--disabled {
+  background: #E8E2D9;
+  color: #9A9A9A;
+  cursor: not-allowed;
+}
+
+.fc-btn--rented {
+  background: #DCFCE7;
+  color: #166534;
+  cursor: default;
+  border: 1px solid #BBF7D0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOUCH / MOBILE  — disable heavy hover effects
+   Uses pointer: coarse to detect touch screens
+   ═══════════════════════════════════════════════════════════ */
+@media (hover: none) and (pointer: coarse) {
+  .film-card:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: rgba(255,255,255,.07);
+  }
+  .film-card:hover .fc-poster-img { transform: scale(1); }
+  .film-card:hover .fc-hover-img  { opacity: 0; }
+  .film-card:hover .fc-overlay    { opacity: 0; }
+  .film-card:hover .fc-hover-meta { opacity: 0; transform: translateY(12px); }
+  /* Keep the info row visible and legible */
+  .fc-info { background: #fff; }
+}
+
+/* ─── RESPONSIVE BREAKPOINTS ──────────────────────────────── */
+
+/* Tablet (max-width: 768px) */
+@media (max-width: 768px) {
+  /* Navbar: hide nav links, shrink search */
+  .nav-links { display: none !important; }
+  .nav-hamburger { display: flex !important; }
+
+  /* Hero section: stack to single column */
+  section[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Dashboard sidebar: stack */
+  div[style*="gridTemplateColumns: \"220px 1fr\""],
+  div[style*="gridTemplateColumns:\"220px 1fr\""] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Profile grid */
+  .profile-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Film detail grid */
+  .film-detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Profile form grid */
+  .profile-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Login/Register split layout */
+  div[style*="gridTemplateColumns: \"1fr 1fr\""],
+  div[style*="gridTemplateColumns:\"1fr 1fr\""] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* KPI cards: 2 columns on tablet */
+  div[style*="repeat(3,1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Rental table: scroll horizontally */
+  div[style*="gridTemplateColumns:\"2fr 1fr 1fr 110px\""],
+  div[style*="gridTemplateColumns: \"2fr 1fr 1fr 110px\""] {
+    grid-template-columns: 2fr 1fr 1fr auto !important;
+    font-size: 12px !important;
+  }
+}
+
+/* Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  /* Even tighter padding */
+  body { font-size: 14px; }
+
+  /* KPI cards: single column on mobile */
+  div[style*="repeat(3,1fr)"],
+  div[style*="repeat(2, 1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Film card grid: single column */
+  div[style*="repeat(auto-fill"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Navbar wallet/account: compact */
+  .nav-account { gap: 4px !important; }
+
+  /* Film stats row */
+  .film-stats-row {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+}
+
+/* Mobile nav overlay */
+.mobile-nav-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 99;
+  animation: fadeIn .2s ease;
+}
+
+.mobile-nav-menu {
+  position: fixed;
+  top: 0; right: 0;
+  width: 260px; height: 100vh;
+  background: #fff;
+  z-index: 100;
+  padding: 2rem 1.5rem;
+  box-shadow: -4px 0 24px rgba(0,0,0,.12);
+  animation: slideIn .25s ease;
+}
+
+.mobile-nav-menu a,
+.mobile-nav-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px 0;
+  border: none;
+  background: none;
+  font-size: 15px;
+  color: #0D0D0D;
+  cursor: pointer;
+  border-bottom: 1px solid #E8E2D9;
+}
+
+/* Hide hamburger by default, show on mobile */
+.nav-hamburger { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   DARK MODE  —  html.dark overrides
+   Applied when useDarkMode() adds class "dark" to <html>.
+   All transitions are 300ms ease for a smooth theme switch.
+   ═══════════════════════════════════════════════════════════ */
+
+html { transition: background-color 300ms ease, color 300ms ease; }
+
+/* ── Body & page background ── */
+html.dark body {
+  background: #0A0A0F;
+  color: #E8E2D9;
+}
+
+/* ── Scrollbar ── */
+html.dark ::-webkit-scrollbar-track  { background: #0D0D0D; }
+html.dark ::-webkit-scrollbar-thumb  { background: #2a2a2a; }
+
+/* ── Film Card info row ── */
+html.dark .fc-info {
+  background: #141418;
+  border-top: 1px solid rgba(255,255,255,.06);
+  transition: background 300ms ease;
+}
+
+html.dark .fc-title  { color: #F5F0E8; }
+html.dark .fc-sub    { color: rgba(255,255,255,.45); }
+html.dark .fc-price  { color: #F5F0E8; }
+html.dark .fc-rating { color: rgba(255,255,255,.45); }
+html.dark .fc-reviews{ color: rgba(255,255,255,.3); }
+
+html.dark .fc-btn--active {
+  background: #C9A84C;
+  color: #0D0D0D;
+}
+html.dark .fc-btn--active:hover {
+  background: #d9bb60;
+  box-shadow: 0 2px 16px rgba(201,168,76,.3);
+}
+html.dark .fc-btn--disabled {
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.3);
+}
+html.dark .fc-btn--rented {
+  background: rgba(22,101,52,.25);
+  color: #86efac;
+  border-color: rgba(134,239,172,.2);
+}
+
+/* ── Film card border / glow ── */
+html.dark .film-card {
+  border-color: rgba(255,255,255,.06);
+  background: #141418;
+}
+
+/* ── Page-level sections (Home inline styles override) ── */
+
+/* Catalog / Browse section white background */
+html.dark section[id="catalog"] {
+  background: #0A0A0F !important;
+}
+
+/* Catalog section heading */
+html.dark section[id="catalog"] h2 {
+  color: #F5F0E8 !important;
+}
+
+/* "X films" count text */
+html.dark section[id="catalog"] > div > span {
+  color: #C9A84C;
+}
+
+/* Category pills */
+html.dark button[style*="borderRadius: 24"],
+html.dark button[style*="borderRadius:24"] {
+  background: rgba(255,255,255,.06) !important;
+  border-color: rgba(255,255,255,.12) !important;
+  color: rgba(255,255,255,.65) !important;
+  transition: background 200ms ease, color 200ms ease;
+}
+html.dark button[style*="background: \"#0D0D0D\""],
+html.dark button[style*="background:\"#0D0D0D\""] {
+  background: #C9A84C !important;
+  color: #0D0D0D !important;
+  border-color: transparent !important;
+}
+
+/* No-results empty state */
+html.dark div[style*="textAlign:\"center\""] h3 { color: #F5F0E8 !important; }
+html.dark div[style*="textAlign:\"center\""] p  { color: rgba(255,255,255,.45) !important; }
+
+/* Spinner border */
+html.dark div[style*="borderTopColor:\"#C9A84C\""] {
+  border-color: rgba(255,255,255,.12);
+  border-top-color: #C9A84C !important;
+}
+
+/* ── Mobile nav menu ── */
+html.dark .mobile-nav-menu {
+  background: #141418;
+  box-shadow: -4px 0 32px rgba(0,0,0,.6);
+}
+html.dark .mobile-nav-menu a,
+html.dark .mobile-nav-menu button {
+  color: rgba(255,255,255,.85);
+  border-bottom-color: rgba(255,255,255,.08);
+}
+
+/* ── Auth / form pages (Login, Register) ── */
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background: rgba(255,255,255,.05) !important;
+  color: #F5F0E8 !important;
+  border-color: rgba(255,255,255,.14) !important;
+}
+html.dark input::placeholder { color: rgba(255,255,255,.3) !important; }
+
+/* ── Links ── */
+html.dark a { color: inherit; }
