@@ -47,9 +47,7 @@ export default function FilmCard({ film, showToast, catalogOnline = true }) {
       showToast(err.message || "Could not rent film", "error");
     }
   };
-
-  /* Hover image: use film.hoverImage if provided, else darken the poster itself */
-  const hoverSrc = film.hoverImage || film.poster;
+  const hoverSrc = (film.hoverImage || film.poster).replace('/w1280/', '/w500/');
 
   return (
     <div

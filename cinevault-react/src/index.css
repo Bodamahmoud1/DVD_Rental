@@ -350,66 +350,76 @@ input, select, textarea { font-family: "DM Sans", sans-serif; }
   .fc-info { background: #fff; }
 }
 
+/* Hide hamburger by default, show on mobile */
+.nav-hamburger { display: none !important; }
+
 /* ─── RESPONSIVE BREAKPOINTS ──────────────────────────────── */
 
 /* Tablet (max-width: 768px) */
 @media (max-width: 768px) {
-  /* Navbar: hide nav links, shrink search */
+  /* Navbar: hide desktop elements, show hamburger */
   .nav-links { display: none !important; }
+  .nav-account { display: none !important; }
   .nav-hamburger { display: flex !important; }
 
-  /* Hero section: stack to single column */
-  section[style*="gridTemplateColumns"] {
+  nav {
+    display: flex !important;
+    padding: 0 1rem !important;
+    gap: 12px !important;
+  }
+  
+  .nav-search-container {
+    flex: 1 !important;
+  }
+
+  /* General Grid Stacking */
+  section[style*="grid-template-columns"],
+  div[style*="grid-template-columns: 220px 1fr"],
+  div[style*="grid-template-columns: 1fr 1fr"] {
     grid-template-columns: 1fr !important;
   }
 
-  /* Dashboard sidebar: stack */
-  div[style*="gridTemplateColumns: \"220px 1fr\""],
-  div[style*="gridTemplateColumns:\"220px 1fr\""] {
-    grid-template-columns: 1fr !important;
+  /* Hide Dashboard Sidebar on Mobile (Use Navbar Global Menu Instead) */
+  .dashboard-sidebar {
+    display: none !important;
   }
 
   /* Profile grid */
-  .profile-grid {
-    grid-template-columns: 1fr !important;
-  }
+  .profile-grid { grid-template-columns: 1fr !important; }
 
   /* Film detail grid */
-  .film-detail-grid {
-    grid-template-columns: 1fr !important;
-  }
+  .film-detail-grid { grid-template-columns: 1fr !important; }
 
   /* Profile form grid */
-  .profile-form-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* Login/Register split layout */
-  div[style*="gridTemplateColumns: \"1fr 1fr\""],
-  div[style*="gridTemplateColumns:\"1fr 1fr\""] {
-    grid-template-columns: 1fr !important;
-  }
+  .profile-form-grid { grid-template-columns: 1fr !important; }
 
   /* KPI cards: 2 columns on tablet */
-  div[style*="repeat(3,1fr)"] {
+  div[style*="repeat(3, 1fr)"] {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 
   /* Rental table: scroll horizontally */
-  div[style*="gridTemplateColumns:\"2fr 1fr 1fr 110px\""],
-  div[style*="gridTemplateColumns: \"2fr 1fr 1fr 110px\""] {
+  div[style*="grid-template-columns: 2fr 1fr 1fr 110px"] {
     grid-template-columns: 2fr 1fr 1fr auto !important;
     font-size: 12px !important;
   }
+
+  /* Adjust padding for mobile devices */
+  main[style*="padding"] { padding: 0 1rem !important; }
+  section[style*="padding"] { padding: 2rem 1rem !important; }
+  nav[style*="padding"] { padding: 1rem !important; }
+  
+  /* Make text smaller on mobile */
+  h1 { font-size: 32px !important; }
+  .hero-mini-grid { display: none !important; } /* Hide mini grid on small screens to save space */
 }
 
 /* Mobile (max-width: 480px) */
 @media (max-width: 480px) {
-  /* Even tighter padding */
   body { font-size: 14px; }
 
   /* KPI cards: single column on mobile */
-  div[style*="repeat(3,1fr)"],
+  div[style*="repeat(3, 1fr)"],
   div[style*="repeat(2, 1fr)"] {
     grid-template-columns: 1fr !important;
   }
@@ -462,9 +472,6 @@ input, select, textarea { font-family: "DM Sans", sans-serif; }
   cursor: pointer;
   border-bottom: 1px solid #E8E2D9;
 }
-
-/* Hide hamburger by default, show on mobile */
-.nav-hamburger { display: none !important; }
 
 /* ═══════════════════════════════════════════════════════════
    DARK MODE  —  html.dark overrides

@@ -179,7 +179,7 @@ export default function Home({ searchQuery, showToast }) {
         </div>
 
         {/* Mini poster grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, transform: "perspective(700px) rotateY(-10deg) rotateX(3deg)" }}>
+        <div className="hero-mini-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, transform: "perspective(700px) rotateY(-10deg) rotateX(3deg)" }}>
           {FILMS.slice(0, 6).map(f => (
             <div key={f.id} onClick={() => navigate(`/film/${f.id}`)}
               style={{ borderRadius: 7, overflow: "hidden", aspectRatio: "2/3", position: "relative", cursor: "pointer", background: "#1a1a2e", transition: "transform .3s" }}

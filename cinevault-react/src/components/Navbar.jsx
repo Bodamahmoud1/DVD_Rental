@@ -13,6 +13,7 @@ export default function Navbar({ onSearch, dark, onToggleDark }) {
   const [query, setQuery] = useState("");
   const [hoveredNav, setHoveredNav] = useState("");
   const [hoveredAction, setHoveredAction] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -52,7 +53,7 @@ export default function Navbar({ onSearch, dark, onToggleDark }) {
             CineVault
           </span>
         </Link>
-        <ul style={{
+        <ul className="nav-links" style={{
           display:"flex",
           gap:"clamp(8px, 1.2vw, 1.5rem)",
           listStyle:"none",
@@ -90,7 +91,7 @@ export default function Navbar({ onSearch, dark, onToggleDark }) {
       </div>
 
       {/* Search bar — flex priority over account buttons */}
-      <div style={{ display:"flex", justifyContent:"center", alignItems:"center", minWidth:0, padding:"0 4px" }}>
+      <div className="nav-search-container" style={{ display:"flex", justifyContent:"center", alignItems:"center", minWidth:0, padding:"0 4px" }}>
         <div style={{
           display:"flex", alignItems:"center", gap:8,
           background: dark ? "rgba(255,255,255,.07)" : "#FAF7F2",
@@ -126,7 +127,7 @@ export default function Navbar({ onSearch, dark, onToggleDark }) {
         </div>
       </div>
 
-      {/* Wallet + account — flex-shrink: 0 to prevent squishing */}
+      {/* Right side controls (Dark Mode, Account, Hamburger) */}
       <div style={{ display:"flex", alignItems:"center", justifyContent:"flex-end", gap:8, flexShrink:0, minWidth:"fit-content" }}>
         {/* Dark mode toggle */}
         <button
@@ -167,7 +168,10 @@ export default function Navbar({ onSearch, dark, onToggleDark }) {
             </svg>
           )}
         </button>
-        {user ? (
+
+        {/* Wallet + account (Hidden on mobile) */}
+        <div className="nav-account" style={{ display:"flex", alignItems:"center", gap:8 }}>
+          {user ? (
           <>
             <span
               title="Wallet Balance"
@@ -273,7 +277,73 @@ export default function Navbar({ onSearch, dark, onToggleDark }) {
             Sign In
           </button>
         )}
+        </div>
+
+        {/* Hamburger Button (only visible on mobile via CSS) */}
+      <button
+        className="nav-hamburger"
+        onClick={() => setMobileMenuOpen(true)}
+        title="Menu"
+        style={{
+          background:"transparent", border:"none", cursor:"pointer",
+          padding:"4px", display:"flex", alignItems:"center", justifyContent:"center",
+          flexShrink:0
+        }}
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={dark ? "#fff" : "#0D0D0D"} strokeWidth="2" strokeLinecap="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <>
+          <div className="mobile-nav-overlay" onClick={() => setMobileMenuOpen(false)} />
+          <div className="mobile-nav-menu" style={{ padding: "1.5rem 0" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem", padding: "0 1.5rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#C9A84C" }} />
+                <span style={{ fontFamily: "'Playfair Display',serif", fontSize: 18, color: dark ? "#fff" : "#0D0D0D", fontWeight: 700 }}>CineVault</span>
+              </div>
+              <button onClick={() => setMobileMenuOpen(false)} style={{ background:"none", border:"none", cursor:"pointer", padding:4 }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={dark ? "#fff" : "#0D0D0D"} strokeWidth="2" strokeLinecap="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+
+            <div style={{ fontSize: 9.5, color: dark ? "rgba(255,255,255,.28)" : "rgba(0,0,0,.4)", textTransform: "uppercase", letterSpacing: 2, padding: "0 1.5rem .6rem" }}>Main</div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <Link to="/" onClick={() => setMobileMenuOpen(false)} style={{ padding: "12px 1.5rem", fontSize: 14, borderBottom: "none", color: dark ? "rgba(255,255,255,.8)" : "#0D0D0D", textDecoration: "none", fontWeight: 500 }}>Browse Films</Link>
+              <Link to="/#new-releases" onClick={() => setMobileMenuOpen(false)} style={{ padding: "12px 1.5rem", fontSize: 14, borderBottom: "none", color: dark ? "rgba(255,255,255,.8)" : "#0D0D0D", textDecoration: "none", fontWeight: 500 }}>New Releases</Link>
+              <Link to="/#categories" onClick={() => setMobileMenuOpen(false)} style={{ padding: "12px 1.5rem", fontSize: 14, borderBottom: "none", color: dark ? "rgba(255,255,255,.8)" : "#0D0D0D", textDecoration: "none", fontWeight: 500 }}>Categories</Link>
+              {user && (
+                <>
+                  <Link to="/dashboard#dashboard" onClick={() => setMobileMenuOpen(false)} style={{ padding: "12px 1.5rem", fontSize: 14, borderBottom: "none", color: dark ? "rgba(255,255,255,.8)" : "#0D0D0D", textDecoration: "none", fontWeight: 500 }}>Dashboard</Link>
+                  <Link to="/dashboard#rentals" onClick={() => setMobileMenuOpen(false)} style={{ padding: "12px 1.5rem", fontSize: 14, borderBottom: "none", color: dark ? "rgba(255,255,255,.8)" : "#0D0D0D", textDecoration: "none", fontWeight: 500 }}>My Rentals</Link>
+                  <Link to="/dashboard#wishlist" onClick={() => setMobileMenuOpen(false)} style={{ padding: "12px 1.5rem", fontSize: 14, borderBottom: "none", color: dark ? "rgba(255,255,255,.8)" : "#0D0D0D", textDecoration: "none", fontWeight: 500 }}>Wishlist</Link>
+                </>
+              )}
+            </div>
+
+            <div style={{ fontSize: 9.5, color: dark ? "rgba(255,255,255,.28)" : "rgba(0,0,0,.4)", textTransform: "uppercase", letterSpacing: 2, padding: "1rem 1.5rem .6rem", marginTop: ".5rem", borderTop: dark ? "1px solid rgba(255,255,255,.08)" : "1px solid rgba(0,0,0,.08)" }}>Account</div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              {user ? (
+                <>
+                  <Link to="/profile" onClick={() => setMobileMenuOpen(false)} style={{ padding: "12px 1.5rem", fontSize: 14, borderBottom: "none", color: dark ? "rgba(255,255,255,.8)" : "#0D0D0D", textDecoration: "none", fontWeight: 500 }}>Profile</Link>
+                  <button style={{ padding: "12px 1.5rem", fontSize: 14, borderBottom: "none", textAlign: "left", color: dark ? "#F5B7B1" : "#B03A2E", background: "none", fontWeight: 500 }} onClick={() => { setMobileMenuOpen(false); logout(); navigate("/"); }}>Sign Out</button>
+                </>
+              ) : (
+                <button style={{ padding: "12px 1.5rem", fontSize: 14, borderBottom: "none", textAlign: "left", color: dark ? "rgba(255,255,255,.8)" : "#0D0D0D", background: "none", fontWeight: 500 }} onClick={() => { setMobileMenuOpen(false); navigate("/login"); }}>Sign In</button>
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </nav>
   );
 }

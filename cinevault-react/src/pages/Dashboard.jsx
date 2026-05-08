@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import FilmCard from "../components/FilmCard";
 
@@ -20,7 +20,21 @@ const SideItem = ({ icon, label, active, onClick }) => (
 );
 
 export default function Dashboard({ showToast }) {
-  const [section, setSection] = useState("dashboard");
+  const location = useLocation();
+  const [section, setSection] = useState(() => {
+    const hash = location.hash.replace("#", "");
+    return ["dashboard", "rentals", "wishlist"].includes(hash) ? hash : "dashboard";
+  });
+  
+  useEffect(() => {
+    const hash = location.hash.replace("#", "");
+    if (["dashboard", "rentals", "wishlist"].includes(hash)) {
+      setSection(hash);
+    } else if (!hash) {
+      setSection("dashboard");
+    }
+  }, [location.hash]);
+
   const { user, logout, rentals, wishlist } = useAuth();
   const navigate = useNavigate();
   const firstName = user?.name?.split(" ")[0] || "Guest";
@@ -46,12 +60,16 @@ export default function Dashboard({ showToast }) {
     .filter(Boolean)
     .map(normalizeWishlistFilm);
 
-  const go = (s) => { if (s === "browse") { navigate("/"); return; } if (s === "profile") { navigate("/profile"); return; } setSection(s); };
+  const go = (s) => { 
+    if (s === "browse") { navigate("/"); return; } 
+    if (s === "profile") { navigate("/profile"); return; } 
+    navigate(`/dashboard#${s}`); 
+  };
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "220px 1fr", minHeight: "calc(100vh - 64px)" }}>
       {/* Sidebar */}
-      <aside style={{ background: "#0D0D0D", borderRight: "1px solid rgba(255,255,255,.06)", position: "sticky", top: 64, height: "calc(100vh - 64px)", overflowY: "auto" }}>
+      <aside className="dashboard-sidebar" style={{ background: "#0D0D0D", borderRight: "1px solid rgba(255,255,255,.06)", position: "sticky", top: 64, height: "calc(100vh - 64px)", overflowY: "auto" }}>
         <div style={{ padding: "1.8rem 1.4rem 1.4rem", borderBottom: "1px solid rgba(255,255,255,.08)", marginBottom: "1rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
             <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#C9A84C" }} />
