@@ -154,11 +154,17 @@ export default function Home({ searchQuery, showToast }) {
           </p>
           <div style={{ display: "flex", gap: 12, marginBottom: "2.5rem" }}>
             <button onClick={() => document.getElementById("catalog")?.scrollIntoView({ behavior: "smooth" })}
-              style={{ background: "#C9A84C", color: "#0D0D0D", border: "none", borderRadius: 7, padding: "11px 24px", fontSize: 13.5, fontWeight: 500, cursor: "pointer" }}>
+              style={{ background: "#C9A84C", color: "#0D0D0D", border: "none", borderRadius: 7, padding: "11px 24px", fontSize: 13.5, fontWeight: 500, cursor: "pointer", transition: "all 0.2s ease" }}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 16px rgba(201,168,76,0.3)"; e.currentTarget.style.background = "#d8b656"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.background = "#C9A84C"; }}
+            >
               Browse Catalog
             </button>
             <button onClick={() => showToast("Rent → Enjoy → Return within 7 days!", "info")}
-              style={{ background: "transparent", color: "rgba(255,255,255,.65)", border: "1px solid rgba(255,255,255,.2)", borderRadius: 7, padding: "11px 24px", fontSize: 13.5, cursor: "pointer" }}>
+              style={{ background: "transparent", color: "rgba(255,255,255,.65)", border: "1px solid rgba(255,255,255,.2)", borderRadius: 7, padding: "11px 24px", fontSize: 13.5, cursor: "pointer", transition: "all 0.2s ease" }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "rgba(255,255,255,.65)"; e.currentTarget.style.borderColor = "rgba(255,255,255,.2)"; e.currentTarget.style.transform = "none"; }}
+            >
               How it works
             </button>
           </div>
