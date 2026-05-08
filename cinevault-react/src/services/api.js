@@ -1,4 +1,4 @@
-const BASE = "http://localhost:5000/api";
+const BASE = "https://dvd-rental-jndm.vercel.app/api";
 
 const getHeaders = () => {
   const token = localStorage.getItem("cv_token");
