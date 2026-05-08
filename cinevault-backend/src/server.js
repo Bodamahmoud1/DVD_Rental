@@ -68,7 +68,12 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal server error" });
 });
 
-// ── Start server ───────────────────────────────────────────────
+// ── Serverless Support (Vercel) ────────────────────────────────
+if (!process.env.PORT || process.env.VERCEL) {
+  connectDB().catch(err => console.error("Serverless DB connect error:", err));
+}
+
+// ── Start server (Local/Standard Hosting) ──────────────────────
 const startServer = async () => {
   try {
     // 1. Connect to MongoDB
@@ -86,10 +91,11 @@ const startServer = async () => {
 
     // 3. Connect to Redis (optional — app works without it)
     try {
+      const { connectRedis } = require("./config/redis");
       await connectRedis();
       console.log("Redis connected");
     } catch (redisErr) {
-      console.warn("Redis unavailable, continuing without cache:", redisErr.message);
+      console.warn("Redis unavailable, continuing without cache");
     }
 
     // 4. Start listening
